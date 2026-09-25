@@ -1,32 +1,51 @@
 {
   "name": "policy-to-code-mapper",
   "displayName": "Policy-to-Code Mapper",
-  "description": "A Context-Aware IDE Assistant for Real-Time Security and Policy Guidance",
+  "description": "Context-aware policy guidance for secure software development",
   "version": "0.1.0",
-  "publisher": "policy-to-code",
+  "publisher": "policy-to-code-mapper",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
     "Linters",
-    "Programming Languages",
+    "Security",
     "Other"
   ],
-  "activationEvents": [
-    "onLanguage:python"
-  ],
+  "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "policyToCode.analyzeFile",
+        "command": "policyToCode.analyzeCurrentFile",
         "title": "Policy-to-Code: Analyze Current File"
       },
       {
-        "command": "policyToCode.viewTraceability",
+        "command": "policyToCode.showPolicyGuidance",
+        "title": "Policy-to-Code: Show Policy Guidance"
+      },
+      {
+        "command": "policyToCode.showTraceability",
         "title": "Policy-to-Code: View Traceability"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "policyToCode",
+          "title": "Policy-to-Code",
+          "icon": "resources/icons/policy.svg"
+        }
+      ]
+    },
+    "views": {
+      "policyToCode": [
+        {
+          "id": "policyToCode.guidanceView",
+          "name": "Active Policy Guidance"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

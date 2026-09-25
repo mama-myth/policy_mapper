@@ -1,31 +1,39 @@
-# Research Methodology — Policy-to-Code Mapper
+# Research Methodology: Policy-to-Code Mapper
 
-## 1. Primary Research Objectives
-Policy-to-Code Mapper investigates the effectiveness of **point-of-action policy interventions** in software development. The central hypothesis is that presenting contextual, traceable, non-blocking policy guidance directly inside the IDE at the time of code creation reduces security risks (such as sensitive data logging) compared to traditional post-hoc security audits or disconnected documentation.
+## 1. Research Objective & Context
+Modern DevSecOps practices emphasize "shifting security left," but organizational governance, risk, and compliance (GRC) policies frequently remain isolated from daily software engineering workflows. Security policies are typically hosted in static repositories or GRC platforms that developers rarely consult while writing code.
 
-## 2. Intended Target Users
-- **Primary Users:** Software developers writing Python code in Visual Studio Code.
-- **Secondary Stakeholders:** Security engineers, DevSecOps leads, and GRC professionals seeking transparent policy adoption without degrading developer velocity.
+**Policy-to-Code Mapper** investigates a human-centered security hypothesis:
+> *Providing contextual, non-blocking policy guidance directly in the IDE at the moment code is written increases developer policy awareness and encourages safer coding choices without harming developer productivity or trust.*
 
-## 3. Core Intervention Mechanism
-The intervention operates on five key human-centered principles:
-1. **Advisory & Educational:** Guidance is supportive and educational rather than punitive or blocking.
-2. **Contextual Timeliness:** Information is delivered at the exact point of action (inside the IDE diagnostic/hover UI).
-3. **Explainable Traceability:** Every prompt establishes a transparent chain:
-   $$\text{Code Evidence} \rightarrow \text{Observed Pattern} \rightarrow \text{Internal Policy} \rightarrow \text{Supporting Regulation} \rightarrow \text{Actionable Suggestion}$$
-4. **Developer Autonomy:** Developers retain full authority to dismiss guidance, view details, or follow suggested safe alternatives.
-5. **Zero Friction:** Non-blocking diagnostics ensure building, committing, and saving code are never interrupted.
+---
 
-## 4. Policy-to-Code Traceability Model
-To prevent "black-box" warnings, each finding produced by the system includes explicit traceability fields:
-- `code_to_pattern`: Explains how the AST detected the specific variable/call combination.
-- `pattern_to_policy`: Identifies the exact internal security policy requirement (`SEC-LOG-001`).
-- `policy_to_context`: Links the policy requirement to relevant supporting regulatory context (e.g., GDPR Article 32).
+## 2. Theoretical Framework: Behavioral Intervention in IDEs
+The design of Policy-to-Code Mapper is grounded in developer experience (DevEx) and human-centered security research:
 
-## 5. Evaluation Strategy
-The prototype's effectiveness and usability will be evaluated through a two-fold approach:
-1. **Technical Precision & Recall:** Benchmark against a curated dataset of positive, negative, safe, and ambiguous code snippets to evaluate detection accuracy and false-positive rates.
-2. **Human-Centered Usability Evaluation:** User feedback surveys assessing:
-   - Perceived usefulness and clarity of policy guidance.
-   - Developer trust and perceived non-intrusiveness.
-   - Learning impact regarding secure logging practices.
+1. **Point-of-Action Intervention:** Interventions are most effective when delivered at the exact moment of decision-making rather than deferred to pull request reviews or post-commit security scans.
+2. **Advisory, Non-Blocking Design:** Rigid blocking mechanisms generate developer frustration, leading to bypasses or disabled security tools. Policy-to-Code Mapper uses advisory warnings (`Warning` severity) that preserve developer autonomy.
+3. **Transparent Traceability:** Developer trust requires explainability. Every policy guidance item explicitly links source code evidence to internal policies, risk justifications, and supporting regulatory references.
+4. **Actionable Remediation:** Guidance includes concrete, safer implementation examples to reduce the cognitive burden on developers attempting to fix identified issues.
+
+---
+
+## 3. Disambiguation: Policy Guidance vs. Compliance Certification
+Policy-to-Code Mapper is strictly an **educational and policy-awareness assistant**. It explicitly avoids declaring code as legally compliant or non-compliant.
+
+| Dimension | Policy-to-Code Mapper (This Tool) | Traditional Legal/Compliance Tool |
+| :--- | :--- | :--- |
+| **Primary Goal** | Developer policy awareness & behavioral nudging | Formal legal risk audit or certification |
+| **Output Wording** | "Potential policy consideration", "Consider whether..." | "Non-compliant", "Legal violation", "Illegal code" |
+| **Enforcement** | Non-blocking IDE advice | Gating / Build failure / Legal determination |
+| **Scope** | Local code context & developer guidance | Organizational legal liability assessment |
+
+---
+
+## 4. Evaluative Design & Usability Metrics
+The prototype evaluates behavioral intervention efficacy across five key dimensions:
+- **Clarity:** Is the policy explanation understandable to developers?
+- **Actionability:** Does the safer example enable immediate remediation?
+- **Intrusiveness:** Does the guidance disrupt coding flow?
+- **Trust:** Is the policy mapping perceived as accurate and relevant?
+- **Traceability:** Does linking internal policies to regulatory contexts improve understanding?
