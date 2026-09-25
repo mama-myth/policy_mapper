@@ -1,24 +1,77 @@
 import json
 from pathlib import Path
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 from fastapi.responses import HTMLResponse
 from backend.config import settings
+from backend.schemas import AnalyzeRequest, ErrorResponseModel
+from backend.services.analysis_service import analysis_service
+from backend.services.guidance_service import AnalysisResponseModel
+from backend.analyzer.ast_parser import parse_python_code
 
 app = FastAPI(
     title="Policy-to-Code Mapper API",
-    description="Context-aware IDE backend for real-time security policy guidance.",
+    description=(
+        "A Context-Aware IDE Assistant for Real-Time Security and Policy Guidance.\n\n"
+        "Brings relevant organizational security policies (SEC-LOG-001) and selected regulatory "
+        "context (GDPR Article 32) into the software-development workflow at the point of action."
+    ),
     version="0.1.0",
 )
 
 DATA_DIR = Path(__file__).parent / "data"
 
 
-@app.get("/health")
+@app.get(
+    "/health",
+    summary="Health Check",
+    description="Returns backend service operational status."
+)
 def health_check() -> dict:
     return {"status": "ok", "service": "policy-to-code-mapper"}
 
 
-@app.get("/mock-analysis")
+@app.post(
+    "/analyze",
+    response_model=AnalysisResponseModel,
+    summary="Analyze Source Code for Policy Guidance",
+    description=(
+        "Analyzes raw Python source code for security-relevant patterns (e.g. sensitive credential logging) "
+        "and maps observed patterns to internal policies and supporting regulatory context."
+    ),
+    responses={
+        400: {"model": ErrorResponseModel, "description": "Unsupported language or empty code payload."},
+        422: {"model": ErrorResponseModel, "description": "Python syntax parsing error."}
+    }
+)
+def analyze_code(request: AnalyzeRequest) -> AnalysisResponseModel:
+    if request.language.lower() != "python":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "UnsupportedLanguage", "message": f"Language '{request.language}' is not supported. Only 'python' is supported."}
+        )
+
+    if not request.code or not request.code.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "EmptyCode", "message": "Source code content cannot be empty."}
+        )
+
+    # Validate Python syntax first
+    _, syntax_error = parse_python_code(request.code)
+    if syntax_error:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "error": "SyntaxError",
+                "message": f"Python syntax error at line {syntax_error.lineno}: {syntax_error.message}",
+                "details": syntax_error.to_dict()
+            }
+        )
+
+    return analysis_service.analyze_code(code=request.code, file_name=request.file_name)
+
+
+@app.get("/mock-analysis", summary="Mock Analysis JSON")
 def get_mock_analysis() -> dict:
     mock_file = DATA_DIR / "mock_findings.json"
     if not mock_file.exists():
@@ -27,7 +80,7 @@ def get_mock_analysis() -> dict:
         return json.load(f)
 
 
-@app.get("/mock-guidance", response_class=HTMLResponse)
+@app.get("/mock-guidance", response_class=HTMLResponse, summary="Mock Guidance HTML Card")
 def get_mock_guidance_card() -> str:
     mock_file = DATA_DIR / "mock_findings.json"
     if not mock_file.exists():
@@ -42,7 +95,7 @@ def get_mock_guidance_card() -> str:
     reg = finding["supporting_regulatory_context"][0]
     trace = finding["traceability"]
 
-    html_content = f"""<!DOCTYPE html>
+    return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -211,7 +264,6 @@ def get_mock_guidance_card() -> str:
 </body>
 </html>
 """
-    return html_content
 
 
 if __name__ == "__main__":
