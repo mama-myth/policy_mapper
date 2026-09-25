@@ -53,6 +53,7 @@ interface AnalysisResponse {
 }
 
 let activeFindings: Finding[] = [];
+let localFeedbackLog: { finding_id: string; action: string; timestamp: string }[] = [];
 let diagnosticCollection: vscode.DiagnosticCollection;
 
 export function activate(context: vscode.ExtensionContext) {
@@ -99,7 +100,6 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         const finding = activeFindings[0];
-        const trace = finding.traceability;
         const reg = finding.supporting_regulatory_context[0];
 
         const message = [
@@ -113,6 +113,27 @@ export function activate(context: vscode.ExtensionContext) {
         ].join('\n\n');
 
         vscode.window.showInformationMessage(message, { modal: true });
+    });
+
+    // Feedback Commands (Local storage only)
+    const feedbackHelpful = vscode.commands.registerCommand('policyToCode.feedbackHelpful', () => {
+        if (activeFindings.length > 0) {
+            recordFeedback(activeFindings[0].finding_id, 'helpful');
+            vscode.window.showInformationMessage('Policy-to-Code: Feedback recorded locally (Helpful). Thank you!');
+        }
+    });
+
+    const feedbackNotHelpful = vscode.commands.registerCommand('policyToCode.feedbackNotHelpful', () => {
+        if (activeFindings.length > 0) {
+            recordFeedback(activeFindings[0].finding_id, 'not_helpful');
+            vscode.window.showInformationMessage('Policy-to-Code: Feedback recorded locally (Not Helpful). Thank you!');
+        }
+    });
+
+    const dismissGuidance = vscode.commands.registerCommand('policyToCode.dismissGuidance', () => {
+        diagnosticCollection.clear();
+        activeFindings = [];
+        vscode.window.showInformationMessage('Policy-to-Code: Guidance dismissed.');
     });
 
     // Hover Provider Registration
@@ -145,7 +166,22 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    context.subscriptions.push(analyzeCommand, traceabilityCommand, hoverProvider);
+    context.subscriptions.push(
+        analyzeCommand,
+        traceabilityCommand,
+        feedbackHelpful,
+        feedbackNotHelpful,
+        dismissGuidance,
+        hoverProvider
+    );
+}
+
+function recordFeedback(findingId: string, action: string) {
+    localFeedbackLog.push({
+        finding_id: findingId,
+        action: action,
+        timestamp: new Date().toISOString()
+    });
 }
 
 function updateDiagnostics(document: vscode.TextDocument, findings: Finding[]) {

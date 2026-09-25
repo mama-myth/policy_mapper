@@ -1,0 +1,58 @@
+[
+  {
+    "id": "TC-001",
+    "category": "positive_credential_logging",
+    "expected_policy_id": "SEC-LOG-001",
+    "expected_finding_count": 1,
+    "code": "def login(user, password):\n    logger.info('User %s with password %s', user, password)"
+  },
+  {
+    "id": "TC-002",
+    "category": "positive_credential_logging",
+    "expected_policy_id": "SEC-LOG-001",
+    "expected_finding_count": 1,
+    "code": "def connect(api_key):\n    print('Connecting using API key:', api_key)"
+  },
+  {
+    "id": "TC-003",
+    "category": "positive_credential_logging",
+    "expected_policy_id": "SEC-LOG-001",
+    "expected_finding_count": 1,
+    "code": "def auth(request):\n    logging.warning('Failed token %s', request.access_token)"
+  },
+  {
+    "id": "TC-004",
+    "category": "positive_personal_data_logging",
+    "expected_policy_id": "SEC-LOG-002",
+    "expected_finding_count": 1,
+    "code": "def register(user):\n    logger.info('Registered email: %s', user.email)"
+  },
+  {
+    "id": "TC-005",
+    "category": "safe_logging",
+    "expected_policy_id": null,
+    "expected_finding_count": 0,
+    "code": "def login(user, user_id):\n    logger.info('Login attempt for user_id=%s', user_id)"
+  },
+  {
+    "id": "TC-006",
+    "category": "safe_logging",
+    "expected_policy_id": null,
+    "expected_finding_count": 0,
+    "code": "def process():\n    print('Batch job finished successfully.')"
+  },
+  {
+    "id": "TC-007",
+    "category": "non_logging_sensitive_usage",
+    "expected_policy_id": null,
+    "expected_finding_count": 0,
+    "code": "def hash_pass(password):\n    hashed = hashlib.sha256(password.encode()).hexdigest()\n    return hashed"
+  },
+  {
+    "id": "TC-008",
+    "category": "benign_variable_names",
+    "expected_policy_id": null,
+    "expected_finding_count": 0,
+    "code": "def show():\n    category = 'general_announcement'\n    print(category)"
+  }
+]
