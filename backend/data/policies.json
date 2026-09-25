@@ -1,0 +1,45 @@
+[
+  {
+    "id": "SEC-LOG-001",
+    "title": "Sensitive Data Must Not Be Logged",
+    "category": "Secure Logging",
+    "requirement": "Passwords, authentication tokens, API keys, session identifiers, credentials, and other secrets must not be written to application logs, console output, debug output, or error messages.",
+    "risk_explanation": "Sensitive values written to logs can be exposed through log storage, monitoring systems, error-reporting platforms, backups, support tools, or unauthorized access.",
+    "developer_guidance": "Remove sensitive values from output statements. Log non-sensitive operational data only when necessary. Use event IDs, correlation IDs, or masked values where appropriate.",
+    "relevant_code_contexts": [
+      "Sensitive identifier passed to print()",
+      "Sensitive identifier passed to logging function",
+      "Sensitive identifier passed to logger method"
+    ],
+    "supporting_regulatory_context": [
+      {
+        "framework": "GDPR",
+        "article": "Article 32",
+        "title": "Security of processing",
+        "relationship": "supporting_security_context",
+        "note": "This is supporting context, not a legal conclusion."
+      }
+    ]
+  },
+  {
+    "id": "SEC-LOG-002",
+    "title": "Personal Data in Logs Must Be Minimized",
+    "category": "Data Privacy",
+    "requirement": "Personal data such as full names, email addresses, phone numbers, addresses, dates of birth, or government identifiers should not be included in logs unless there is a clear operational necessity and adequate protection.",
+    "risk_explanation": "Unnecessary logging of personal data increases privacy risks and expands data retention footprints across log management infrastructure.",
+    "developer_guidance": "Minimize personal data in log output. Use pseudonyms or internal user identifiers instead of raw personal attributes.",
+    "relevant_code_contexts": [
+      "Personal data identifier passed to print()",
+      "Personal data identifier passed to logging function"
+    ],
+    "supporting_regulatory_context": [
+      {
+        "framework": "GDPR",
+        "article": "Article 5(1)(c)",
+        "title": "Data minimisation",
+        "relationship": "supporting_privacy_context",
+        "note": "Relevant when personal data is logged excessively or without clear necessity."
+      }
+    ]
+  }
+]

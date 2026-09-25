@@ -1,0 +1,48 @@
+{
+  "analysis_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "language": "python",
+  "file_name": "unsafe_credential_logging.py",
+  "findings": [
+    {
+      "finding_id": "f1e2d3c4-b5a6-7890-1234-567890abcdef",
+      "guidance_type": "policy_awareness",
+      "severity": "high",
+      "title": "Potential sensitive credential logging",
+      "potential_policy_consideration": "This log statement appears to include authentication credentials.",
+      "code_evidence": {
+        "line_start": 8,
+        "line_end": 8,
+        "function_called": "logger.info",
+        "sensitive_identifier": "password",
+        "snippet": "logger.info(\"Login attempt for %s with password %s\", username, password)"
+      },
+      "observed_pattern": "sensitive_value_passed_to_logging_function",
+      "policy_reference": {
+        "id": "SEC-LOG-001",
+        "title": "Sensitive Data Must Not Be Logged",
+        "category": "Secure Logging"
+      },
+      "supporting_regulatory_context": [
+        {
+          "framework": "GDPR",
+          "article": "Article 32",
+          "title": "Security of processing",
+          "relationship": "supporting_security_context"
+        }
+      ],
+      "why_this_matters": "Credentials in logs can be exposed through monitoring tools, support systems, error reports, backups, or unauthorized log access.",
+      "recommended_action": "Remove the password from the log message. Log only a non-sensitive event, a masked identifier, or an internal correlation ID if needed.",
+      "safer_example": "logger.info(\"Login attempt for user_id=%s\", user_id)",
+      "confidence": {
+        "label": "high",
+        "basis": "A deterministic AST rule detected a sensitive identifier passed to a recognized logging or output function."
+      },
+      "traceability": {
+        "code_to_pattern": "password → logger.info()",
+        "pattern_to_policy": "sensitive credential logging → SEC-LOG-001",
+        "policy_to_context": "SEC-LOG-001 → GDPR Article 32"
+      },
+      "disclaimer": "This is automated developer guidance, not legal advice or a legal-compliance determination."
+    }
+  ]
+}
